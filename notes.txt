@@ -1,0 +1,1 @@
+daml new MyBorrowApp --template empty-skeleton
