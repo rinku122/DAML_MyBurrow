@@ -24,7 +24,7 @@ template ItemCustody
         rightFullOwner : Party
       controller custodian
       do create this with
-           owner = rightFullOwner         
+           custodian = rightFullOwner         
 
 setup : Script ItemCustodyId
 setup = script do
