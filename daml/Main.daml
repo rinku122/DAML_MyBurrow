@@ -9,6 +9,8 @@ template ItemCustody
     owner : Party
     custodian : Party
     itemName : Text
+    meterCount : Int
+    neighbour : Party
   where
     ensure itemName /= ""
     signatory owner
@@ -16,44 +18,31 @@ template ItemCustody
     choice ReleaseItemTo : ItemCustodyId
       with
         friend : Party
+        currentMeter : Int
       controller owner
       do create this with
            custodian = friend
+           meterCount = currentMeter
     choice ReturnItemTo : ItemCustodyId
       with
         rightFullOwner : Party
+        currentMeter : Int
       controller custodian
       do create this with
-           custodian = rightFullOwner         
+           custodian = rightFullOwner 
+           meterCount = currentMeter  
 
-setup : Script ItemCustodyId
+
+
+-- setup : Script ItemCustodyId
 setup = script do
--- user_setup_begin
-  -- jerry <- allocatePartyWithHint "Jerry" (PartyIdHint "Jerry")
-  -- elaine <- allocatePartyWithHint "Elaine" (PartyIdHint "Elaine")
-  -- jerryId <- validateUserId "jerry"
-  -- elaineId <- validateUserId "elaine"
-  -- createUser (User jerryId (Some jerry)) [CanActAs jerry]
-  -- createUser (User elaineId (Some elaine)) [CanActAs elaine]
-  jerry <- allocateParty "Jerry"
-  elaine <- allocateParty "Elaine"
-  
--- user_setup_end
-
-  brandNewCamera <- submit jerry do 
-    createCmd ItemCustody with
-      owner = jerry
-      custodian = jerry
-      itemName = "Really Expensive Camera"    
-
-  elaineHasCamera <- submit jerry do
-    exerciseCmd brandNewCamera ReleaseItemTo with friend = elaine
-
-  submit elaine do
-    exerciseCmd elaineHasCamera ReturnItemTo with rightFullOwner = jerry    
-
-
-
-
-
-
+  jerry <- allocatePartyWithHint "Jerry" (PartyIdHint "Jerry")
+  elaine <- allocatePartyWithHint "Eliane" (PartyIdHint "Elaine")
+  kamren <- allocatePartyWithHint "Kamren" (PartyIdHint "Kamren")
+  jerryId <- validateUserId "jerry"
+  elaineId <- validateUserId "elaine"
+  kamrenId <- validateUserId "kamren"
+  createUser (User jerryId (Some jerry)) [CanActAs jerry]
+  createUser (User elaineId (Some elaine)) [CanActAs elaine]
+  createUser (User kamrenId (Some kamren)) [CanActAs kamren]
+  return()
