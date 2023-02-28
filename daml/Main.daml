@@ -9,35 +9,68 @@ template ItemCustody
     owner : Party
     custodian : Party
     itemName : Text
-    meterCount : Int
     neighbour : Party
+    meterCount : Int
   where
     ensure itemName /= ""
     signatory owner
-    observer custodian
+    observer [neighbour, custodian]
     choice ReleaseItemTo : ItemCustodyId
       with
         friend : Party
-        currentMeter : Int
+        currentCount : Int
       controller owner
       do create this with
            custodian = friend
-           meterCount = currentMeter
+           meterCount = currentCount
     choice ReturnItemTo : ItemCustodyId
       with
         rightFullOwner : Party
-        currentMeter : Int
+        currentCount : Int
       controller custodian
       do create this with
            custodian = rightFullOwner 
-           meterCount = currentMeter  
+           meterCount = currentCount            
+
+--Writing whole script
+
+-- setup : Script ItemCustodyId
+-- setup = script do
+-- -- user_setup_begin
+--   -- jerry <- allocatePartyWithHint "Jerry" (PartyIdHint "Jerry")
+--   -- elaine <- allocatePartyWithHint "Elaine" (PartyIdHint "Elaine")
+--   -- jerryId <- validateUserId "jerry"
+--   -- elaineId <- validateUserId "elaine"
+--   -- createUser (User jerryId (Some jerry)) [CanActAs jerry]
+--   -- createUser (User elaineId (Some elaine)) [CanActAs elaine]
+--   jerry <- allocateParty "Jerry"
+--   elaine <- allocateParty "Elaine"
+--   kamren <- allocateParty "Kamren"
+
+-- -- user_setup_end
+
+--   brandNewCamera <- submit jerry do 
+--     createCmd ItemCustody with
+--       owner = jerry
+--       custodian = jerry
+--       itemName = "Really Expensive Camera"    
+--       neighbour = kamren
+--       meterCount = 1000
+
+--   elaineHasCamera <- submit jerry do
+--     exerciseCmd brandNewCamera ReleaseItemTo with friend = elaine, currentCount = 2000
+
+--   submit elaine do
+--     exerciseCmd elaineHasCamera ReturnItemTo with rightFullOwner = jerry, currentCount = 3000 
 
 
+--Only Creating User
 
 -- setup : Script ItemCustodyId
 setup = script do
+-- user_setup_begin
   jerry <- allocatePartyWithHint "Jerry" (PartyIdHint "Jerry")
-  elaine <- allocatePartyWithHint "Eliane" (PartyIdHint "Elaine")
+  elaine <- allocatePartyWithHint "Elaine" (PartyIdHint "Elaine")
   kamren <- allocatePartyWithHint "Kamren" (PartyIdHint "Kamren")
   jerryId <- validateUserId "jerry"
   elaineId <- validateUserId "elaine"
@@ -45,4 +78,4 @@ setup = script do
   createUser (User jerryId (Some jerry)) [CanActAs jerry]
   createUser (User elaineId (Some elaine)) [CanActAs elaine]
   createUser (User kamrenId (Some kamren)) [CanActAs kamren]
-  return()
+
